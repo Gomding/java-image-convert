@@ -37,8 +37,7 @@ public class FfmpegTest {
         URL resource = getClass().getClassLoader().getResource(GIF_FILENAME);
         File gifFile = new File(resource.getPath());
 
-        URL resource2 = getClass().getClassLoader().getResource(MP4_FILENAME);
-        File mp4File = new File(resource2.getPath());
+        File mp4File = new File(gifFile.getPath().replace(".gif", ".mp4"));
 
         try {
             final FFmpeg fFmpeg = new FFmpeg(ffmpegPath);
@@ -52,7 +51,7 @@ public class FfmpegTest {
                     .overrideOutputFiles(true)
                     .addExtraArgs("-r", "10")
                     .setInput(gifFile.getPath())
-                    .addOutput("/Users/parksmac/Downloads/resize33333.mp4")
+                    .addOutput(mp4File.getPath())
                     .addExtraArgs("-an")
                     .setVideoPixelFormat("yuv420p")
                     .setVideoMovFlags("faststart")
