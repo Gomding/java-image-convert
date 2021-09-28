@@ -60,6 +60,8 @@ public class FfmpegTest {
                     .setVideoFilter("scale=trunc(iw/2)*2:trunc(ih/2)*2")
                     .done();
 
+            System.out.println(builder.toString());
+
             FFmpegExecutor executor = new FFmpegExecutor(fFmpeg, fFprobe);
             FFmpegJob job = executor.createJob(builder);
             System.out.println("before run job state!!! is " + job.getState());
