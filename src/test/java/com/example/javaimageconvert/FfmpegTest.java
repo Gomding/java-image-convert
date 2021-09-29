@@ -27,7 +27,7 @@ class FfmpegTest {
     private static final String GIF_FILENAME = "static/image/jjv1FK.gif";
 
     @Test
-    void test() {
+    void test() throws IOException {
         System.out.println(ffmpegPath);
         System.out.println(ffprovePath);
 
@@ -36,39 +36,35 @@ class FfmpegTest {
 
         File mp4File = new File(gifFile.getPath().replace(".gif", ".mp4"));
 
-        try {
-            final FFmpeg fFmpeg = new FFmpeg(ffmpegPath);
-            final FFprobe fFprobe = new FFprobe(ffprovePath);
-            System.out.println("initComplete!!!");
+        final FFmpeg fFmpeg = new FFmpeg(ffmpegPath);
+        final FFprobe fFprobe = new FFprobe(ffprovePath);
+        System.out.println("initComplete!!!");
 
-            assertThat(fFmpeg.isFFmpeg()).isTrue();
-            assertThat(fFprobe.isFFprobe()).isTrue();
+        assertThat(fFmpeg.isFFmpeg()).isTrue();
+        assertThat(fFprobe.isFFprobe()).isTrue();
 
-            FFmpegBuilder builder = new FFmpegBuilder()
-                    .overrideOutputFiles(true)
-                    .addExtraArgs("-r", "10")
-                    .setInput(gifFile.getPath())
-                    .addOutput(mp4File.getPath())
-                    .addExtraArgs("-an")
-                    .setVideoPixelFormat("yuv420p")
-                    .setVideoMovFlags("faststart")
-                    .setVideoWidth(240)
-                    .setVideoHeight(182)
-                    .setVideoFilter("scale=trunc(iw/2)*2:trunc(ih/2)*2")
-                    .done();
+        FFmpegBuilder builder = new FFmpegBuilder()
+                .overrideOutputFiles(true)
+                .addExtraArgs("-r", "10")
+                .setInput(gifFile.getPath())
+                .addOutput(mp4File.getPath())
+                .addExtraArgs("-an")
+                .setVideoPixelFormat("yuv420p")
+                .setVideoMovFlags("faststart")
+                .setVideoWidth(240)
+                .setVideoHeight(182)
+                .setVideoFilter("scale=trunc(iw/2)*2:trunc(ih/2)*2")
+                .done();
 
-            System.out.println(builder.build());
-            builder.build().forEach(System.out::println);
+        System.out.println(builder.build());
+        builder.build().forEach(System.out::println);
 
-            FFmpegExecutor executor = new FFmpegExecutor(fFmpeg, fFprobe);
-            FFmpegJob job = executor.createJob(builder);
-            System.out.println("before run job state!!! is " + job.getState());
-            job.run();
-            System.out.println("after run job state!!! is " + job.getState());
-
-        } catch (IOException e) {
-            System.out.println("fail!!!");
-            e.printStackTrace();
-        }
+        FFmpegExecutor executor = new FFmpegExecutor(fFmpeg, fFprobe);
+        FFmpegJob job = executor.createJob(builder);
+        System.out.println("before run job state!!! is " + job.getState());
+        assertThat(job.getState()).isEqualTo(FFmpegJob.State.WAITING);
+        job.run();
+        System.out.println("after run job state!!! is " + job.getState());
+        assertThat(job.getState()).isEqualTo(FFmpegJob.State.FINISHED);
     }
 }

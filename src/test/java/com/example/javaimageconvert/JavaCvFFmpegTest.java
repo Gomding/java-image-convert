@@ -18,30 +18,26 @@ class JavaCvFFmpegTest {
     String ffmpegPath = Loader.load(org.bytedeco.ffmpeg.ffmpeg.class);
 
     @Test
-    void test() {
+    void test() throws IOException {
         URL resource = getClass().getClassLoader().getResource(GIF_FILENAME);
         File gifFile = new File(resource.getPath());
         File mp4File = new File(gifFile.getPath().replace(".gif", ".mp4"));
 
-        try {
-            FFmpegBuilder builder = new FFmpegBuilder()
-                    .overrideOutputFiles(true)
-                    .addExtraArgs("-r", "10")
-                    .setInput(gifFile.getPath())
-                    .addOutput(mp4File.getPath())
-                    .addExtraArgs("-an")
-                    .setVideoPixelFormat("yuv420p")
-                    .setVideoMovFlags("faststart")
-                    .setVideoWidth(240)
-                    .setVideoHeight(182)
-                    .setVideoFilter("scale=trunc(iw/2)*2:trunc(ih/2)*2")
-                    .done();
+        FFmpegBuilder builder = new FFmpegBuilder()
+                .overrideOutputFiles(true)
+                .addExtraArgs("-r", "10")
+                .setInput(gifFile.getPath())
+                .addOutput(mp4File.getPath())
+                .addExtraArgs("-an")
+                .setVideoPixelFormat("yuv420p")
+                .setVideoMovFlags("faststart")
+                .setVideoWidth(240)
+                .setVideoHeight(182)
+                .setVideoFilter("scale=trunc(iw/2)*2:trunc(ih/2)*2")
+                .done();
 
-            FFmpegExecutor executor = new FFmpegExecutor(new FFmpeg(ffmpegPath));
-            FFmpegJob job = executor.createJob(builder);
-            job.run();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        FFmpegExecutor executor = new FFmpegExecutor(new FFmpeg(ffmpegPath));
+        FFmpegJob job = executor.createJob(builder);
+        job.run();
     }
 }
